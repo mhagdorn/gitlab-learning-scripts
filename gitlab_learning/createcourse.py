@@ -3,6 +3,7 @@ import gitlab
 import yaml
 from pathlib import Path
 import argparse
+from jinja2 import Environment, BaseLoader
 
 
 def main():
@@ -25,17 +26,26 @@ def main():
     personal_group = gl.get_group(
         "personal", parent_group=year_group, create=True)
 
+    # the template for the README.md
+    if 'readme' in config:
+        readme = Environment(loader=BaseLoader()).from_string(config['readme'])
+    else:
+        readme = Environment(loader=BaseLoader()).from_string(
+            "# Welcome to {{ name }} Course of {{ year }}")
+
     # handle personal projects
     projects = {}
     for p in personal_group.projects.list():
         projects[p.name] = p
 
     for u in config['students']:
+        # create project if it does not exist
         if u not in projects:
             projects[u] = gl.gl.projects.create(
                 {'name': u, 'namespace_id': personal_group.id})
         project = gl.gl.projects.get(projects[u].id)
 
+        # add user to project
         user = gl.getUser(u)
         if user is not None:
             try:
@@ -45,7 +55,17 @@ def main():
                     {'user_id': user.id, 'access_level':
                      gitlab.const.AccessLevel.MAINTAINER})
 
-        # need to add some files to repo
+        # add readme to repo
+        try:
+            project.files.get(file_path='README.md', ref='main')
+            have_readme = True
+        except gitlab.exceptions.GitlabGetError:
+            have_readme = False
+        if not have_readme:
+            project.files.create({'file_path': 'README.md',
+                                  'branch': 'main',
+                                  'content': readme.render(**config),
+                                  'commit_message': 'Create Readme'})
 
 
 if __name__ == '__main__':

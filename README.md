@@ -1,6 +1,6 @@
 # GitLab Learning Scripts
 
-A collection of scripts that use the [GitLab REST API](https://docs.gitlab.com/ee/api/rest/) to setup GitLab projects and repositories for a group of students. The functionality is inspired by [GitHub Classroom](https://classroom.github.com/) but more light-weight without a graphical user interface. Courses are defined via yaml configuration files. 
+A collection of scripts that use the [GitLab REST API](https://docs.gitlab.com/ee/api/rest/) to setup GitLab projects and repositories for a group of students. The functionality is inspired by [GitHub Classroom](https://classroom.github.com/) but more light-weight without a graphical user interface. Courses are defined via yaml configuration files. See the [course.yml](course.yml) for an example course description.
 
 
 ## Concepts
