@@ -28,10 +28,7 @@ class GitlabLearning:
             if group.name == group_name:
                 if parent_group is not None:
                     if group.parent_id != parent_group.id:
-                        raise RuntimeError(
-                            f"the parent id {group.parent_id} "
-                            "does not match the "
-                            f"id of the parent group {parent_group.name}")
+                        continue
                 break
         else:
             if create:
