@@ -18,10 +18,11 @@ def main():
         gitlab_id = None
     gl = GitlabLearning(gitlab_id=gitlab_id)
 
+    print("user status hasKeys")
     for u in config['students']:
         user = gl.getUser(u)
         if user is not None:
-            print(user.username, user.state)
+            print(user.username, user.state, len(user.keys.list()) > 0)
         else:
             print(u)
 
