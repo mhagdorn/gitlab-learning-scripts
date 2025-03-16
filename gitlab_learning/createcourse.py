@@ -3,7 +3,7 @@ import gitlab
 import yaml
 from pathlib import Path
 import argparse
-from jinja2 import Environment, BaseLoader
+from jinja2 import Environment, BaseLoader, PackageLoader, select_autoescape
 
 
 def main():
@@ -30,8 +30,10 @@ def main():
     if 'readme' in config:
         readme = Environment(loader=BaseLoader()).from_string(config['readme'])
     else:
-        readme = Environment(loader=BaseLoader()).from_string(
-            "# Welcome to {{ name }} Course of {{ year }}")
+        env = Environment(
+            loader=PackageLoader("gitlab_learning"),
+            autoescape=select_autoescape())
+        readme = env.get_template("README.md")
 
     # handle personal projects
     projects = {}
