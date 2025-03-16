@@ -1,0 +1,24 @@
+\documentclass[14pt]{scrartcl}
+\usepackage[a4paper,margin=1.5cm,landscape]{geometry}
+\usepackage{tabularx}
+
+\begin{document}
+\title{Sign-In Sheet {{ name }} - {{ year }} }
+\subtitle{ {{ session.title }} \\ {{ session.date|datetime }} }
+\date{\vspace{-5ex}}
+\author{\vspace{-5ex}}
+\maketitle
+\begin{tabularx}{\textwidth}{|l|l|X|}
+  \hline
+  User Name & Name & Signature \\
+  \hline \hline
+  {% for name, id in users -%}
+  \texttt{ {{ id }} }& {{ name if name is not none }} & \\
+  \hline
+{% endfor %}
+\end{tabularx}
+\end{document}
+
+
+
+

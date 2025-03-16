@@ -12,4 +12,14 @@ readme: |
   of the syntax. GitLab supports various
   [Markdown extensions](https://docs.gitlab.com/user/markdown/)
   (like GitHub).
+sessions:
+  - title: Session 1
+    date: 2025-03-16
+    time: 14:00-17:00
+  - title: Session 2
+    date: 2025-03-23
+    time: 14:00-17:00
+  - title: Session 3
+    date: 2025-03-30
+    time: 14:00-17:00
 ...
