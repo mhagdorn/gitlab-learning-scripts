@@ -1,4 +1,4 @@
-from .gl import GitlabLearning
+from .glc import GitlabCourse
 import yaml
 from pathlib import Path
 import argparse
@@ -27,7 +27,7 @@ def main():
     config = yaml.safe_load(args.course.read_text())
 
     env = Environment(
-        loader=PackageLoader("gitlab_learning"),
+        loader=PackageLoader("gitlab_course"),
         autoescape=select_autoescape())
     env.filters["datetime"] = format_date
 
@@ -35,11 +35,11 @@ def main():
         gitlab_id = config['gitlab']
     else:
         gitlab_id = None
-    gl = GitlabLearning(gitlab_id=gitlab_id)
+    glc = GitlabCourse(gitlab_id=gitlab_id)
 
     users = []
     for u in config['students']:
-        user = gl.getUser(u)
+        user = glc.getUser(u)
         if user is not None:
             name = user.name
         else:

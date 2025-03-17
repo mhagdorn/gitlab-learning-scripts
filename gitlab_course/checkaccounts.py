@@ -1,4 +1,4 @@
-from .gl import GitlabLearning
+from .glc import GitlabCourse
 import yaml
 from pathlib import Path
 import argparse
@@ -16,11 +16,11 @@ def main():
         gitlab_id = config['gitlab']
     else:
         gitlab_id = None
-    gl = GitlabLearning(gitlab_id=gitlab_id)
+    glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    course_group = gl.get_group(config["name"])
-    year_group = gl.get_group(config["year"], parent_group=course_group)
-    personal_group = gl.get_group("personal", parent_group=year_group)
+    course_group = glc.get_group(config["name"])
+    year_group = glc.get_group(config["year"], parent_group=course_group)
+    personal_group = glc.get_group("personal", parent_group=year_group)
 
     personal_projects = {}
     for p in personal_group.projects.list():
@@ -28,7 +28,7 @@ def main():
 
     print("user status hasKeys hasPersonal")
     for u in config['students']:
-        user = gl.getUser(u)
+        user = glc.getUser(u)
         if user is not None:
             print(user.username, user.state, len(user.keys.list()) > 0,
                   u in personal_projects)

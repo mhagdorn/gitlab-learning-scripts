@@ -1,4 +1,4 @@
-from .gl import GitlabLearning
+from .glc import GitlabCourse
 import gitlab
 import yaml
 from pathlib import Path
@@ -18,12 +18,12 @@ def main():
         gitlab_id = config['gitlab']
     else:
         gitlab_id = None
-    gl = GitlabLearning(gitlab_id=gitlab_id)
+    glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    course_group = gl.get_group(config["name"], create=True)
-    year_group = gl.get_group(
+    course_group = glc.get_group(config["name"], create=True)
+    year_group = glc.get_group(
         config["year"], parent_group=course_group, create=True)
-    personal_group = gl.get_group(
+    personal_group = glc.get_group(
         "personal", parent_group=year_group, create=True)
 
     # the template for the README.md
@@ -31,7 +31,7 @@ def main():
         readme = Environment(loader=BaseLoader()).from_string(config['readme'])
     else:
         env = Environment(
-            loader=PackageLoader("gitlab_learning"),
+            loader=PackageLoader("gitlab_course"),
             autoescape=select_autoescape())
         readme = env.get_template("README.md")
 
@@ -43,12 +43,12 @@ def main():
     for u in config['students']:
         # create project if it does not exist
         if u not in projects:
-            projects[u] = gl.gl.projects.create(
+            projects[u] = glc.gl.projects.create(
                 {'name': u, 'namespace_id': personal_group.id})
-        project = gl.gl.projects.get(projects[u].id)
+        project = glc.gl.projects.get(projects[u].id)
 
         # add user to project
-        user = gl.getUser(u)
+        user = glc.getUser(u)
         if user is not None:
             try:
                 member = project.members.get(user.id)

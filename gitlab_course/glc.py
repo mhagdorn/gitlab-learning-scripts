@@ -1,4 +1,4 @@
-__all__ = ["GitlabLearning"]
+__all__ = ["GitlabCourse"]
 
 import gitlab
 
@@ -12,7 +12,7 @@ def name2path(name):
     return name.lower().replace(" ", "-")
 
 
-class GitlabLearning:
+class GitlabCourse:
     def __init__(self, gitlab_id=None):
         self._gl = gitlab.Gitlab.from_config(gitlab_id=gitlab_id)
         self.gl.auth()
