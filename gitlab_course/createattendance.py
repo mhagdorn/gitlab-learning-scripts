@@ -41,10 +41,9 @@ def main():
     for u in config['students']:
         user = glc.getUser(u)
         if user is not None:
-            name = user.name
+            users.append((user.name, user.username))
         else:
-            name = None
-        users.append((name, u))
+            users.append((None, u))
 
     if args.session is not None:
         try:

@@ -2,6 +2,7 @@ from .glc import GitlabCourse
 import yaml
 from pathlib import Path
 import argparse
+import gitlab
 
 
 def main():
@@ -24,16 +25,22 @@ def main():
 
     personal_projects = {}
     for p in personal_group.projects.list():
-        personal_projects[p.name] = p
+        personal_projects[p.name] = glc.gl.projects.get(p.id)
 
-    print("user status hasKeys hasPersonal")
+    keys = ["glUser", "name", "status", "hasKeys", "hasPersonal"]
+    print(":".join(keys))
     for u in config['students']:
         user = glc.getUser(u)
         if user is not None:
-            print(user.username, user.state, len(user.keys.list()) > 0,
-                  u in personal_projects)
+            try:
+                personal_projects[u].members.get(user.id)
+                hasPersonal = True
+            except gitlab.exceptions.GitlabGetError:
+                hasPersonal = False
+            print(user.username, user.name, user.state,
+                  len(user.keys.list()) > 0, hasPersonal, sep=":")
         else:
-            print(u)
+            print(u+":"*(len(keys)-1))
 
 
 if __name__ == "__main__":
