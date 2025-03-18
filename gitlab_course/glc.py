@@ -56,5 +56,9 @@ class GitlabCourse:
 
     def getUser(self, name):
         user = self.gl.users.list(username=name)
+        if len(user) == 0:
+            user = self.gl.search(gitlab.const.SearchScope.USERS, name)
+            if len(user) > 0:
+                user = self.gl.users.list(username=user[0]["username"])
         if len(user) > 0:
             return user[0]
