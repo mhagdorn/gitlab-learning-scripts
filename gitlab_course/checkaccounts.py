@@ -4,6 +4,7 @@ from pathlib import Path
 import argparse
 import gitlab
 from dataclasses import dataclass, field
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 
 @dataclass
@@ -31,7 +32,10 @@ def main():
                         help="the course description file")
     parser.add_argument("-m", "--merge-requests", default=False,
                         action="store_true", help="show merge requests")
-   args = parser.parse_args()
+    parser.add_argument("-c", "--comment-sheet", nargs="?", const=0,
+                        type=int, metavar="SESSION",
+                        help="print comment sheet")
+    args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
 
@@ -40,6 +44,10 @@ def main():
     else:
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
+
+    env = Environment(
+        loader=PackageLoader("gitlab_course"),
+        autoescape=select_autoescape())
 
     course_group = glc.get_group(config["name"])
     year_group = glc.get_group(config["year"], parent_group=course_group)
@@ -79,6 +87,13 @@ def main():
                 if not mr.state == "merged":
                     print("  "+mr.title, mr.draft, mr.approved, sep="|")
             print()
+    elif args.comment_sheet is not None:
+        comments = env.get_template("comments.md")
+        if args.comment_sheet > 0:
+            try:
+                session = config["sessions"][args.comment_sheet-1]
+            except IndexError as e:
+                parser.error(e)
         else:
             session = None
         print(comments.render(users=users, session=session))
