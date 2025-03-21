@@ -3,13 +3,35 @@ import yaml
 from pathlib import Path
 import argparse
 import gitlab
+from dataclasses import dataclass, field
+
+
+@dataclass
+class GLCMergeRequest:
+    title: str
+    state: str
+    draft: bool
+    approved: list[str] = field(default_factory=list)
+
+
+@dataclass
+class GLCUser:
+    sysID: str
+    glID: str = ''
+    name: str = ''
+    status: str = ''
+    hasKeys: bool = False
+    hasPersonal: bool = False
+    mergeRequests: list[GLCMergeRequest] = field(default_factory=list)
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
-    args = parser.parse_args()
+    parser.add_argument("-m", "--merge-requests", default=False,
+                        action="store_true", help="show merge requests")
+   args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
 
@@ -27,20 +49,45 @@ def main():
     for p in personal_group.projects.list():
         personal_projects[p.name] = glc.gl.projects.get(p.id)
 
-    keys = ["glUser", "name", "status", "hasKeys", "hasPersonal"]
-    print(":".join(keys))
+    users = []
     for u in config['students']:
+        glcUser = GLCUser(u)
         user = glc.getUser(u)
         if user is not None:
+            glcUser.glID = user.username
+            glcUser.name = user.name
+            glcUser.status = user.state
+            glcUser.hasKeys = len(user.keys.list()) > 0
             try:
                 personal_projects[u].members.get(user.id)
-                hasPersonal = True
+                glcUser.hasPersonal = True
             except gitlab.exceptions.GitlabGetError:
-                hasPersonal = False
-            print(user.username, user.name, user.state,
-                  len(user.keys.list()) > 0, hasPersonal, sep=":")
+                glcUser.hasPersonal = False
+
+            if glcUser.hasPersonal:
+                for mr in personal_projects[u].mergerequests.list():
+                    glcMR = GLCMergeRequest(mr.title, mr.state, mr.draft)
+                    for a in mr.approvals.get().approved_by:
+                        glcMR.approved.append(a["user"]["username"])
+                    glcUser.mergeRequests.append(glcMR)
+        users.append(glcUser)
+
+    if args.merge_requests:
+        for u in users:
+            print(u.sysID, u.name)
+            for mr in u.mergeRequests:
+                if not mr.state == "merged":
+                    print("  "+mr.title, mr.draft, mr.approved, sep="|")
+            print()
         else:
-            print(u+":"*(len(keys)-1))
+            session = None
+        print(comments.render(users=users, session=session))
+    else:
+        keys = ["glUser", "name", "status", "hasKeys", "hasPersonal"]
+        print(":".join(keys))
+        for u in users:
+            print(u.glID, u.name, u.status, u.hasKeys, u.hasPersonal,
+                  sep=":")
 
 
 if __name__ == "__main__":
