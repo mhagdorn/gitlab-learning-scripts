@@ -1,6 +1,7 @@
 from .glc import GitlabCourse
 import yaml
 from pathlib import Path
+import sys
 import argparse
 import gitlab
 from dataclasses import dataclass, field
@@ -35,6 +36,8 @@ def main():
     parser.add_argument("-c", "--comment-sheet", nargs="?", const=0,
                         type=int, metavar="SESSION",
                         help="print comment sheet")
+    parser.add_argument("-o", "--output", type=Path, metavar="OUT",
+                        help="write output to OUT")
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
@@ -44,6 +47,11 @@ def main():
     else:
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
+
+    if args.output is not None:
+        out = args.output.open("w")
+    else:
+        out = sys.stdout
 
     env = Environment(
         loader=PackageLoader("gitlab_course"),
@@ -82,11 +90,12 @@ def main():
 
     if args.merge_requests:
         for u in users:
-            print(u.sysID, u.name)
+            print(u.sysID, u.name, file=out)
             for mr in u.mergeRequests:
                 if not mr.state == "merged":
-                    print("  "+mr.title, mr.draft, mr.approved, sep="|")
-            print()
+                    print("  "+mr.title, mr.draft, mr.approved,
+                          sep="|", file=out)
+            print(file=out)
     elif args.comment_sheet is not None:
         comments = env.get_template("comments.md")
         if args.comment_sheet > 0:
@@ -96,13 +105,14 @@ def main():
                 parser.error(e)
         else:
             session = None
-        print(comments.render(users=users, session=session))
+        out.write(comments.render(users=users, session=session))
     else:
         keys = ["glUser", "name", "status", "hasKeys", "hasPersonal"]
-        print(":".join(keys))
+        print(":".join(keys), file=out)
         for u in users:
             print(u.glID, u.name, u.status, u.hasKeys, u.hasPersonal,
-                  sep=":")
+                  sep=":", file=out)
+    out.close()
 
 
 if __name__ == "__main__":
