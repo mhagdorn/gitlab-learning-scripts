@@ -1,5 +1,9 @@
 image: python:3.10-alpine
 
+variables:
+  https_proxy: http://proxy.charite.de:8080
+  http_proxy: http://proxy.charite.de:8080
+
 pylint:
   stage: test
   script:
