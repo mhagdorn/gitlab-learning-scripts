@@ -51,9 +51,9 @@ def main():
         user = glc.getUser(u)
         if user is not None:
             try:
-                member = project.members.get(user.id)
+                project.members.get(user.id)
             except gitlab.exceptions.GitlabGetError:
-                member = project.members.create(
+                project.members.create(
                     {'user_id': user.id, 'access_level':
                      gitlab.const.AccessLevel.MAINTAINER})
 
