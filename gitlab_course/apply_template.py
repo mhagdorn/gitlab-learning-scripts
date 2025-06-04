@@ -30,12 +30,20 @@ def main():
     parser.add_argument("course", type=Path,
                         help="the course description file")
     parser.add_argument("-t", "--template", type=Path,
+                        required=True,
                         help="the template to apply")
+    parser.add_argument("-s", "--session", type=int, default=0,
+                        help="the session number")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
+
+    if args.session < 0 or args.session >= len(config["sessions"]):
+        parser.error(
+            "number of sessions outside range "
+            f"[0:{len(config['sessions'])-1}]")
 
     env = Environment(
         loader=FileSystemLoader(args.template.parent),
@@ -43,7 +51,7 @@ def main():
     env.filters["datetime"] = format_date
 
     template = env.get_template(args.template.name)
-    out = template.render(**config)
+    out = template.render(**config, snr=args.session)
 
     if args.output is None:
         print(out)
