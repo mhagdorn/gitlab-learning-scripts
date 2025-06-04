@@ -40,10 +40,10 @@ def main():
 
     config = yaml.safe_load(args.course.read_text())
 
-    if args.session < 0 or args.session >= len(config["sessions"]):
+    if args.session < 1 or args.session > len(config["sessions"]):
         parser.error(
             "number of sessions outside range "
-            f"[0:{len(config['sessions'])-1}]")
+            f"[1:{len(config['sessions'])}]")
 
     env = Environment(
         loader=FileSystemLoader(args.template.parent),
@@ -51,7 +51,7 @@ def main():
     env.filters["datetime"] = format_date
 
     template = env.get_template(args.template.name)
-    out = template.render(**config, snr=args.session)
+    out = template.render(**config, snr=args.session-1)
 
     if args.output is None:
         print(out)
