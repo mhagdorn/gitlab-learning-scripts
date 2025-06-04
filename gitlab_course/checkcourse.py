@@ -13,19 +13,33 @@ def main():
 
     config = yaml.safe_load(args.course.read_text())
 
-    maxp = config['max_participants']
     nump = len(config['participants'])
-    numw = len(config['waiting'])
-    numc = len(config['cancelled'])
+    if 'waiting' in config:
+        numw = len(config['waiting'])
+    else:
+        numw = 0
+    if 'cancelled' in config:
+        numc = len(config['cancelled'])
+    else:
+        numc = 0
+    if 'max_participants' in config:
+        maxp = config['max_participants']
+    else:
+        maxp = None
 
     participants = sorted([p.strip().lower() for p in config['participants']])
 
     if args.verbose:
-        print(f"series: {config['series']}")
+        if 'series' in config:
+            print(f"series: {config['series']}")
         print(f"name: {config['name']}")
-        print(f"number of participants: {nump}/{maxp}")
-        print(f"number waiting: {numw}")
-        print(f"number cancelled: {numc}")
+        print(f"number of participants: {nump}", end="")
+        if maxp is not None:
+            print(f"/{maxp}")
+            print(f"number waiting: {numw}")
+            print(f"number cancelled: {numc}")
+        else:
+            print()
 
     if len(participants) != len(set(participants)):
         doubles = []
@@ -34,14 +48,15 @@ def main():
                 doubles.append(participants[i])
         parser.error("List of participants is not unique.\n "
                      f"{', '.join(doubles)} occur multiple times.")
-    if nump > maxp:
-        parser.error(f"More than {maxp} in course. Move "
-                     f"the {nump - maxp} "
-                     "participants to the waiting list")
-    elif nump < maxp and numw > 0:
-        parser.error("Some spaces available. Move "
-                     f"{min(maxp - nump, numw)} "
-                     "participants to participants list")
+    if maxp is not None:
+        if nump > maxp:
+            parser.error(f"More than {maxp} in course. Move "
+                         f"the {nump - maxp} "
+                         "participants to the waiting list")
+        elif nump < maxp and numw > 0:
+            parser.error("Some spaces available. Move "
+                         f"{min(maxp - nump, numw)} "
+                         "participants to participants list")
 
 
 if __name__ == '__main__':
