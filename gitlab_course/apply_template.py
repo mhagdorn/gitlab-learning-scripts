@@ -20,7 +20,7 @@ def format_date(value, fmt="%A, %d %B %Y"):
             s = 'rd'
         else:
             s = 'th'
-        return d+s
+        return d + s
     else:
         return dt.strftime(fmt)
 

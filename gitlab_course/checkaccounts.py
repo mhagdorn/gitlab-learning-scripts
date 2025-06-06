@@ -93,14 +93,14 @@ def main():
             print(u.sysID, u.name, file=out)
             for mr in u.mergeRequests:
                 if not mr.state == "merged":
-                    print("  "+mr.title, mr.draft, mr.approved,
+                    print("  " + mr.title, mr.draft, mr.approved,
                           sep="|", file=out)
             print(file=out)
     elif args.comment_sheet is not None:
         comments = env.get_template("comments.md")
         if args.comment_sheet > 0:
             try:
-                session = config["sessions"][args.comment_sheet-1]
+                session = config["sessions"][args.comment_sheet - 1]
             except IndexError as e:
                 parser.error(e)
         else:

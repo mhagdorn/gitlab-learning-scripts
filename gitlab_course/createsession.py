@@ -49,14 +49,14 @@ def main():
 
     if args.session is not None:
         try:
-            session = config["sessions"][args.session-1]
+            session = config["sessions"][args.session - 1]
         except Exception as e:
             parser.error(e)
         sign_in = env.get_template("sign-in.tex")
         out = sign_in.render(**config, users=users, session=session)
     elif args.lecture is not None:
         try:
-            session = config["sessions"][args.lecture-1]
+            session = config["sessions"][args.lecture - 1]
         except Exception as e:
             parser.error(e)
         lecture = env.get_template("session.tex")

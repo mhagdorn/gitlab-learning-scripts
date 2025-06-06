@@ -30,7 +30,7 @@ def main():
     if len(participants) != len(set(participants)):
         doubles = []
         for i in range(1, nump):
-            if participants[i] == participants[i-1]:
+            if participants[i] == participants[i - 1]:
                 doubles.append(participants[i])
         parser.error("List of participants is not unique.\n "
                      f"{', '.join(doubles)} occur multiple times.")
