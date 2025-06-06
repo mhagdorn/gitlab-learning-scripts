@@ -1,4 +1,4 @@
 User Name; Name{% for s in sessions %}; {{ s.date }}{% endfor %}
-{% for name, id in users -%}
-{{ id }}; {{ name if name is not none }} {% for s in sessions %}; {% endfor %}
+{% for u in users -%}
+{{ u.sysID }}; {{ u.name }} {% for s in sessions %}; {% endfor %}
 {% endfor %}

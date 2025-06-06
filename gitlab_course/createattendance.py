@@ -35,7 +35,7 @@ def main():
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    users = glc.getUserList(config['participants'], raw=True)
+    users = glc.getUserList(config['participants'])
 
     attendance = env.get_template("attendance.csv")
     out = attendance.render(**config, users=users)
