@@ -67,7 +67,7 @@ def main():
         users = glc.getUserList(config['participants'])
     else:
         users = None
-    out = template.render(**config, snr=args.session-1, users=users)
+    out = template.render(**config, snr=args.session - 1, users=users)
 
     if args.output is None:
         print(out)
