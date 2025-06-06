@@ -48,7 +48,7 @@ def main():
         project = glc.gl.projects.get(projects[u].id)
 
         # add user to project
-        user = glc.getUser(u)
+        user = glc.getUser(u, raw=True)
         if user is not None:
             try:
                 project.members.get(user.id)

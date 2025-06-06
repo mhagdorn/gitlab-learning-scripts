@@ -1,7 +1,8 @@
+from .glc import GitlabCourse
 import yaml
 from pathlib import Path
 import argparse
-from jinja2 import Environment, FileSystemLoader, select_autoescape
+from jinja2 import Environment, FileSystemLoader, select_autoescape, meta
 import datetime
 
 
@@ -32,7 +33,7 @@ def main():
     parser.add_argument("-t", "--template", type=Path,
                         required=True,
                         help="the template to apply")
-    parser.add_argument("-s", "--session", type=int, default=0,
+    parser.add_argument("-s", "--session", type=int, default=1,
                         help="the session number")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
@@ -50,8 +51,23 @@ def main():
         autoescape=select_autoescape())
     env.filters["datetime"] = format_date
 
+    if 'gitlab' in config:
+        gitlab_id = config['gitlab']
+    else:
+        gitlab_id = None
+    glc = GitlabCourse(gitlab_id=gitlab_id)
+
     template = env.get_template(args.template.name)
-    out = template.render(**config, snr=args.session-1)
+
+    # get variables from template, see https://stackoverflow.com/a/8284419
+    template_vars = meta.find_undeclared_variables(
+        env.parse(env.loader.get_source(env, args.template.name)))
+
+    if "users" in template_vars:
+        users = glc.getUserList(config['participants'])
+    else:
+        users = None
+    out = template.render(**config, snr=args.session-1, users=users)
 
     if args.output is None:
         print(out)
