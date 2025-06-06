@@ -50,7 +50,7 @@ def main():
             print(u.sysID, u.name, file=out)
             for mr in glc.getMergeRequests(personal_projects[u.sysID]):
                 if not mr.state == "merged":
-                    print("  "+mr.title, mr.draft, mr.approved,
+                    print("  " + mr.title, mr.draft, mr.approved,
                           sep="|", file=out)
             print(file=out)
     else:

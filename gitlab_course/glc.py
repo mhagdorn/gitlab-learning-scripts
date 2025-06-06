@@ -81,7 +81,7 @@ class GitlabCourse:
                             {'access_level': 30},
                             {'access_level': 40}],
                         "allow_force_push": False,
-                        "allowed_to_merge":  [
+                        "allowed_to_merge": [
                             {'access_level': 30},
                             {'access_level': 40}]},
                 }
