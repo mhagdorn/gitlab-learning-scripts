@@ -17,6 +17,3 @@ A collection of scripts that use the [GitLab REST API](https://docs.gitlab.com/e
   - student group projects are mapped to repositories in a subgroup. Students are added to their respective repositories
   - have private instructor repositories that the personal/group repositories are cloned from
 
-- We will need runners for the CI/CD pipelines. CI/CD is used for
-  - testing
-  - quarto document generation
