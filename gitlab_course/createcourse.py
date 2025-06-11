@@ -6,10 +6,15 @@ import argparse
 from jinja2 import Environment, BaseLoader, PackageLoader, select_autoescape
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
+    return parser
+
+
+def main():
+    parser = arg_parser()
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())

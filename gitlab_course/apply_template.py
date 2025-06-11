@@ -26,7 +26,7 @@ def format_date(value, fmt="%A, %d %B %Y"):
         return dt.strftime(fmt)
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
@@ -37,6 +37,11 @@ def main():
                         help="the session number")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
+    return parser
+
+
+def main():
+    parser = arg_parser()
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())

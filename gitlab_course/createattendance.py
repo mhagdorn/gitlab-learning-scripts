@@ -14,12 +14,17 @@ def format_date(value):
     return dt.strftime("%A, %d %B %Y")
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
+    return parser
+
+
+def main():
+    parser = arg_parser()
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())

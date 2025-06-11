@@ -5,7 +5,7 @@ import sys
 import argparse
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
@@ -13,6 +13,11 @@ def main():
                         action="store_true", help="show merge requests")
     parser.add_argument("-o", "--output", type=Path, metavar="OUT",
                         help="write output to OUT")
+    return parser
+
+
+def main():
+    parser = arg_parser()
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
