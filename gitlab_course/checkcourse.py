@@ -13,12 +13,17 @@ def check_for_doubles(list1, list2=[]):
     return doubles
 
 
-def main():
+def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
-    parser.add_argument("--verbose", default=False,
+    parser.add_argument("--info", default=False,
                         action="store_true", help="show course info")
+    return parser
+
+
+def main():
+    parser = arg_parser()
     args = parser.parse_args()
 
     config = yaml.safe_load(args.course.read_text())
@@ -38,7 +43,7 @@ def main():
     numw = len(lists["waiting"])
     numc = len(lists["cancelled"])
 
-    if args.verbose:
+    if args.info:
         if 'series' in config:
             print(f"series: {config['series']}")
         print(f"name: {config['name']}")
