@@ -23,35 +23,50 @@ def main():
 
     config = yaml.safe_load(args.course.read_text())
 
-    maxp = config['max_participants']
-    nump = len(config['participants'])
-    numw = len(config['waiting'])
-    numc = len(config['cancelled'])
+    lists = {}
+    for ul in ["participants", "waiting", "cancelled"]:
+        if ul in config:
+            lists[ul] = config[ul]
+        else:
+            lists[ul] = []
+    if 'max_participants' in config:
+        maxp = config['max_participants']
+    else:
+        maxp = None
+
+    nump = len(lists["participants"])
+    numw = len(lists["waiting"])
+    numc = len(lists["cancelled"])
 
     if args.verbose:
-        print(f"series: {config['series']}")
+        if 'series' in config:
+            print(f"series: {config['series']}")
         print(f"name: {config['name']}")
-        print(f"number of participants: {nump}/{maxp}")
-        print(f"number waiting: {numw}")
-        print(f"number cancelled: {numc}")
+        print(f"number of participants: {nump}", end="")
+        if maxp is not None:
+            print(f"/{maxp}")
+            print(f"number waiting: {numw}")
+            print(f"number cancelled: {numc}")
+        else:
+            print()
 
     # check for doubles
     errors = ""
     for ul in ["participants", "waiting", "cancelled"]:
-        doubles = check_for_doubles(config[ul])
+        doubles = check_for_doubles(lists[ul])
         if len(doubles) > 0:
             errors += f"List of {ul} is not unique.\n"
             errors += f"{', '.join(doubles)} occur multiple times.\n"
     if len(errors) > 0:
         parser.error(errors[:-1])
     for ul in ["waiting", "cancelled"]:
-        doubles = check_for_doubles(config["participants"], config[ul])
+        doubles = check_for_doubles(lists["participants"], lists[ul])
         if len(doubles) > 0:
             errors += f"people occur in both lists of participants and {ul}.\n"
             errors += f"sort out {', '.join(doubles)}.\n"
     if len(errors) > 0:
         parser.error(errors[:-1])
-    doubles = check_for_doubles(config["waiting"], config["cancelled"])
+    doubles = check_for_doubles(lists["waiting"], lists["cancelled"])
     if len(doubles) > 0:
         errors += "people occur in both lists of waiting and cancelled.\n"
         errors += f"sort out {', '.join(doubles)}.\n"

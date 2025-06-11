@@ -18,10 +18,6 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
-    parser.add_argument("-s", "--session", type=int,
-                        help="the session number")
-    parser.add_argument("-l", "--lecture", type=int,
-                        help="the session number")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
     args = parser.parse_args()
@@ -39,31 +35,11 @@ def main():
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    users = []
-    for u in config['students']:
-        user = glc.getUser(u)
-        if user is not None:
-            users.append((user.name, user.username))
-        else:
-            users.append((None, u))
+    users = glc.getUserList(config['participants'])
 
-    if args.session is not None:
-        try:
-            session = config["sessions"][args.session - 1]
-        except Exception as e:
-            parser.error(e)
-        sign_in = env.get_template("sign-in.tex")
-        out = sign_in.render(**config, users=users, session=session)
-    elif args.lecture is not None:
-        try:
-            session = config["sessions"][args.lecture - 1]
-        except Exception as e:
-            parser.error(e)
-        lecture = env.get_template("session.tex")
-        out = lecture.render(**config, session=session)
-    else:
-        attendance = env.get_template("attendance.csv")
-        out = attendance.render(**config, users=users)
+    attendance = env.get_template("attendance.csv")
+    out = attendance.render(**config, users=users)
+
     if args.output is None:
         print(out)
     else:
