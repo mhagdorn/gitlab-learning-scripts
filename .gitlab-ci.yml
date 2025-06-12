@@ -10,12 +10,25 @@ pylint:
     - pip install -U flake8
     - python -m flake8
 
+pages:
+  stage: deploy
+  script:
+    - pip install -U sphinx sphinx_rtd_theme sphinx-argparse
+    - sphinx-build -b html docs public
+  artifacts:
+    paths:
+      - public
+  only:
+    - main
+
 package:
   stage: deploy
   only:
-  - tags
+    - tags
   script:
-  - pip install build twine
-  - python -m build
-  - twine check dist/*
-  - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token python -m twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
+    - pip install build twine
+    - python -m build
+    - twine check dist/*
+    - TWINE_PASSWORD=${CI_JOB_TOKEN} TWINE_USERNAME=gitlab-ci-token \
+        python -m twine upload --repository-url \
+        ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
