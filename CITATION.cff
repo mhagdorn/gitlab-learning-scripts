@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Hagdorn"
+    given-names: "Magnus Karl Mortiz"
+    orcid: "https://orcid.org/0000-0002-5076-4864"
+title: "gitlab learning scripts"
