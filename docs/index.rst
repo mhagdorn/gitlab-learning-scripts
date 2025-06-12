@@ -1,5 +1,5 @@
-Welcome to GitLab Learning Scripts' documentation!
-==================================================
+Welcome to the documentation of GitLab Learning Scripts!
+========================================================
 
 .. toctree::
    :maxdepth: 2
