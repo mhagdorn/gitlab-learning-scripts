@@ -13,7 +13,7 @@ pylint:
 pages:
   stage: deploy
   script:
-    - pip install -U sphinx sphinx_rtd_theme sphinx-argparse
+    - pip install -U sphinx sphinx_rtd_theme sphinx-argparse myst-parser
     - sphinx-build -b html docs public
   artifacts:
     paths:
