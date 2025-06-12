@@ -17,7 +17,8 @@ sys.path.insert(0, os.path.abspath('..'))
 autodoc_mock_imports = [
     "gitlab"]
 
-from gitlab_course.__version__ import __version__
+__version__ = eval(
+    open("../gitlab_course/__version__.py", "r").read().split("=")[1].strip())
 
 # -- Project information -----------------------------------------------------
 
