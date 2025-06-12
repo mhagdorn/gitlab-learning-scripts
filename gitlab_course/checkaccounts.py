@@ -33,8 +33,8 @@ def main():
     else:
         out = sys.stdout
 
-    course_group = glc.get_group(config["name"])
-    year_group = glc.get_group(config["year"], parent_group=course_group)
+    course_group = glc.get_group(config["series"])
+    year_group = glc.get_group(config["name"], parent_group=course_group)
     personal_group = glc.get_group("personal", parent_group=year_group)
 
     personal_projects = {}

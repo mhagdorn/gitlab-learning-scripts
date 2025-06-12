@@ -25,9 +25,9 @@ def main():
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    course_group = glc.get_group(config["name"], create=True)
+    course_group = glc.get_group(config["series"], create=True)
     year_group = glc.get_group(
-        config["year"], parent_group=course_group, create=True)
+        config["name"], parent_group=course_group, create=True)
     personal_group = glc.get_group(
         "personal", parent_group=year_group, create=True)
 
@@ -45,7 +45,7 @@ def main():
     for p in personal_group.projects.list():
         projects[p.name] = p
 
-    for u in config['students']:
+    for u in config['participants']:
         # create project if it does not exist
         if u not in projects:
             projects[u] = glc.gl.projects.create(

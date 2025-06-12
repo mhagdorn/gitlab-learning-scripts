@@ -1,8 +1,8 @@
 ---
 gitlab: charite
-name: SpaceMed Digital Literacy
-year: 1991
-students:
+series: SpaceMed Digital Literacy
+name: 1991
+participants:
   - svc-sc-slurm1
 readme: |
   # Welcome to {{ name }} Course of {{ year }}
