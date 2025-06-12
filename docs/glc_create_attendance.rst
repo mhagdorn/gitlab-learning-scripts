@@ -1,7 +1,7 @@
 Create Attendance List
 ----------------------
 
-
+Produce a CSV file that can be used to record participant attendance.
 
 Usage
 ^^^^^
