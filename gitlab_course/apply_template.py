@@ -26,6 +26,31 @@ def format_date(value, fmt="%A, %d %B %Y"):
         return dt.strftime(fmt)
 
 
+def apply_template(glc, cfg, tname, session=1):
+    if session < 1 or session > len(cfg["sessions"]):
+        raise RuntimeError(
+            f"number of sessions outside range [1:{len(cfg['sessions'])}]")
+
+    env = Environment(
+        loader=FileSystemLoader(tname.parent),
+        autoescape=select_autoescape())
+    env.filters["datetime"] = format_date
+
+    template = env.get_template(tname.name)
+
+    # get variables from template, see https://stackoverflow.com/a/8284419
+    template_vars = meta.find_undeclared_variables(
+        env.parse(env.loader.get_source(env, tname.name)))
+
+    if "users" in template_vars:
+        users = glc.getUserList(cfg['participants'])
+    else:
+        users = None
+    out = template.render(**cfg, snr=session - 1, users=users)
+
+    return out
+
+
 def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
@@ -46,33 +71,16 @@ def main():
 
     config = yaml.safe_load(args.course.read_text())
 
-    if args.session < 1 or args.session > len(config["sessions"]):
-        parser.error(
-            "number of sessions outside range "
-            f"[1:{len(config['sessions'])}]")
-
-    env = Environment(
-        loader=FileSystemLoader(args.template.parent),
-        autoescape=select_autoescape())
-    env.filters["datetime"] = format_date
-
     if 'gitlab' in config:
         gitlab_id = config['gitlab']
     else:
         gitlab_id = None
     glc = GitlabCourse(gitlab_id=gitlab_id)
 
-    template = env.get_template(args.template.name)
-
-    # get variables from template, see https://stackoverflow.com/a/8284419
-    template_vars = meta.find_undeclared_variables(
-        env.parse(env.loader.get_source(env, args.template.name)))
-
-    if "users" in template_vars:
-        users = glc.getUserList(config['participants'])
-    else:
-        users = None
-    out = template.render(**config, snr=args.session - 1, users=users)
+    try:
+        out = apply_template(glc, config, args.template, session=args.session)
+    except Exception as e:
+        parser.error(e)
 
     if args.output is None:
         print(out)
