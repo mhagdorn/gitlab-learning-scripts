@@ -17,9 +17,11 @@ def arg_parser():
                         help="the template to apply")
     parser.add_argument("-s", "--session", type=int, default=1,
                         help="the session number")
-    parser.add_argument("-m", "--mail", choices=mail_type, action="append",
-                        default=[],
+    parser.add_argument("-g", "--mail-group", choices=mail_type,
+                        action="append", default=[],
                         help="select the group of email recipiants")
+    parser.add_argument("-m", "--mail", action="append", default=[],
+                        help="individual email addresses")
     parser.add_argument("-f", "--from-email",
                         help="the email address of the sender, "
                         "use the organiser email address if not specified")
@@ -59,13 +61,17 @@ def main():
 
     recipients = set()
     for mt in ["instructors", "helpers"]:
-        if mt in args.mail and mt in config:
+        if mt in args.mail_group and mt in config:
             for u in config[mt]:
                 recipients.add(u["email"])
     for mt in ["participants", "waiting"]:
-        if mt in args.mail and mt in config:
+        if mt in args.mail_group and mt in config:
             for u in config[mt]:
                 recipients.add(u)
+    for m in args.mail:
+        if '@' not in m:
+            parser.error(f"{m} is not an email address")
+        recipients.add(m)
 
     organiser = None
     if "organiser" in config:
