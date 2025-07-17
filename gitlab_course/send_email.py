@@ -5,6 +5,7 @@ from pathlib import Path
 import argparse
 from email.message import EmailMessage
 import smtplib
+import mimetypes
 
 
 def arg_parser():
@@ -15,6 +16,8 @@ def arg_parser():
     parser.add_argument("-t", "--template", type=Path,
                         required=True,
                         help="the template to apply")
+    parser.add_argument("-a", "--attach", type=Path, default=[],
+                        action="append", help="attach a file")
     parser.add_argument("-s", "--session", type=int, default=1,
                         help="the session number")
     parser.add_argument("-g", "--mail-group", choices=mail_type,
@@ -105,6 +108,20 @@ def main():
         except Exception as e:
             parser.error(e)
         msg.add_alternative(content, "html")
+
+    if len(args.attach) > 0:
+        mimetypes.init()
+        for a in args.attach:
+            mtype, _ = mimetypes.guess_type(a)
+            if mtype is not None:
+                maintype, subtype = mtype.split('/')
+            else:
+                maintype = "application"
+                subtype = "octet-stream"
+            msg.add_attachment(
+                a.read_bytes(),
+                maintype=maintype, subtype=subtype,
+                filename=a.name)
 
     if smtp_server is not None:
         smtp_server.send_message(msg)
