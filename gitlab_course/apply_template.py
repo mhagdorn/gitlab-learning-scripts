@@ -38,13 +38,8 @@ def apply_template(glc, cfg, tname, session=1):
 
     template = env.get_template(tname.name)
 
-    # get variables from template, see https://stackoverflow.com/a/8284419
-    template_vars = meta.find_undeclared_variables(
-        env.parse(env.loader.get_source(env, tname.name)))
-
-    if "users" in template_vars:
-        users = glc.getUserList(cfg['participants'])
-    else:
+    users = glc.getUserList(cfg['participants'])
+    if len(users) == 0:
         users = None
     out = template.render(**cfg, snr=session - 1, users=users)
 
