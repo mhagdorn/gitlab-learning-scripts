@@ -2,6 +2,7 @@ import yaml
 from pathlib import Path
 import argparse
 
+USER_TYPES = ["participants", "waiting", "cancelled"]
 
 def check_for_doubles(list1, list2=[]):
     sorted_list = sorted([p.strip().lower() for p in list1 + list2])
@@ -17,8 +18,10 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
-    parser.add_argument("--info", default=False,
+    parser.add_argument("-i", "--info", default=False,
                         action="store_true", help="show course info")
+    parser.add_argument("-l", "--list", choices=USER_TYPES,
+                        help="list users")
     return parser
 
 
@@ -29,7 +32,7 @@ def main():
     config = yaml.safe_load(args.course.read_text())
 
     lists = {}
-    for ul in ["participants", "waiting", "cancelled"]:
+    for ul in USER_TYPES:
         if ul in config:
             lists[ul] = config[ul]
         else:
@@ -54,10 +57,13 @@ def main():
             print(f"number cancelled: {numc}")
         else:
             print()
+    if args.list is not None:
+        for u in lists[args.list]:
+            print(u)
 
     # check for doubles
     errors = ""
-    for ul in ["participants", "waiting", "cancelled"]:
+    for ul in USER_TYPES:
         doubles = check_for_doubles(lists[ul])
         if len(doubles) > 0:
             errors += f"List of {ul} is not unique.\n"
