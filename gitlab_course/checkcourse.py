@@ -4,6 +4,7 @@ import argparse
 
 USER_TYPES = ["participants", "waiting", "cancelled"]
 
+
 def check_for_doubles(list1, list2=[]):
     sorted_list = sorted([p.strip().lower() for p in list1 + list2])
     doubles = []

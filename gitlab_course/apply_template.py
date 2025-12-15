@@ -2,7 +2,7 @@ from .glc import GitlabCourse
 import yaml
 from pathlib import Path
 import argparse
-from jinja2 import Environment, FileSystemLoader, select_autoescape, meta
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 import datetime
 
 
