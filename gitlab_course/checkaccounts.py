@@ -9,6 +9,9 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
+    parser.add_argument("-u", "--user-only", default=False,
+                        action="store_true", help="check only if users"
+                        " have gitlab account")
     parser.add_argument("-m", "--merge-requests", default=False,
                         action="store_true", help="show merge requests")
     parser.add_argument("-o", "--output", type=Path, metavar="OUT",
@@ -33,22 +36,26 @@ def main():
     else:
         out = sys.stdout
 
-    course_group = glc.get_group(config["series"])
-    year_group = glc.get_group(config["name"], parent_group=course_group)
-    personal_group = glc.get_group("personal", parent_group=year_group)
-
-    personal_projects = {}
-    for p in personal_group.projects.list():
-        personal_projects[p.name] = glc.gl.projects.get(p.id)
-
     users = glc.getUserList(config['participants'])
 
-    for i, u in enumerate(users):
-        try:
-            personal_projects[u.sysID].members.get(u._ID)
-            users[i].hasPersonal = True
-        except Exception:
+    if args.user_only:
+        for i in range(len(users)):
             users[i].hasPersonal = False
+    else:
+        course_group = glc.get_group(config["series"])
+        year_group = glc.get_group(config["name"], parent_group=course_group)
+        personal_group = glc.get_group("personal", parent_group=year_group)
+
+        personal_projects = {}
+        for p in personal_group.projects.list():
+            personal_projects[p.name] = glc.gl.projects.get(p.id)
+
+        for i, u in enumerate(users):
+            try:
+                personal_projects[u.sysID].members.get(u._ID)
+                users[i].hasPersonal = True
+            except Exception:
+                users[i].hasPersonal = False
 
     if args.merge_requests:
         for u in users:
