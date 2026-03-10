@@ -37,10 +37,16 @@ def main():
         out = sys.stdout
 
     users = glc.getUserList(config['participants'])
+    if 'helpers' in config:
+        helpers = glc.getUserList(config['helpers'])
+    else:
+        helpers = []
 
     if args.user_only:
         for i in range(len(users)):
             users[i].hasPersonal = False
+        for i in range(len(helpers)):
+            helpers[i].hasPersonal = False
     else:
         course_group = glc.get_group(config["series"])
         year_group = glc.get_group(config["name"], parent_group=course_group)
@@ -49,6 +55,13 @@ def main():
         personal_projects = {}
         for p in personal_group.projects.list():
             personal_projects[p.name] = glc.gl.projects.get(p.id)
+
+        for i, u in enumerate(helpers):
+            try:
+                year_group.members.get(u._ID)
+                helpers[i].hasPersonal = True
+            except Exception:
+                helpers[i].hasPersonal = False
 
         for i, u in enumerate(users):
             try:
@@ -68,7 +81,7 @@ def main():
     else:
         keys = ["glUser", "name", "status", "hasKeys", "hasPersonal"]
         print(":".join(keys), file=out)
-        for u in users:
+        for u in helpers + users:
             print(u.glID, u.name, u.status, u.hasKeys, u.hasPersonal,
                   sep=":", file=out)
     out.close()
