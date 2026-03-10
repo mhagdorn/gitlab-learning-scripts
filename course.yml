@@ -1,7 +1,9 @@
 ---
 gitlab: charite
 series: SpaceMed Digital Literacy
-name: 1991
+name: 1992
+helpers:
+  - reppasa
 participants:
   - svc-sc-slurm1
 readme: |

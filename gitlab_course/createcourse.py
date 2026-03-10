@@ -31,6 +31,17 @@ def main():
     personal_group = glc.get_group(
         "personal", parent_group=year_group, create=True)
 
+    # add the helpers to the year group
+    if 'helpers' in config:
+        for u in config['helpers']:
+            helper = glc.getUser(u, raw=True)
+            try:
+                year_group.members.get(helper.id)
+            except gitlab.exceptions.GitlabGetError:
+                year_group.members.create(
+                    {'user_id': helper.id, 'access_level':
+                     gitlab.const.AccessLevel.REPORTER})
+
     # the template for the README.md
     if 'readme' in config:
         readme = Environment(loader=BaseLoader()).from_string(config['readme'])
