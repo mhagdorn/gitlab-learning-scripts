@@ -53,7 +53,7 @@ def main():
 
     # handle personal projects
     projects = {}
-    for p in personal_group.projects.list():
+    for p in personal_group.projects.list(iterator=True):
         projects[p.name] = p
 
     for u in config['participants']:
