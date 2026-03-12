@@ -1,4 +1,4 @@
 User Name; Name{% for s in sessions %}; {{ s.date }}{% endfor %}
-{% for u in users -%}
+{% for u in users | sort(attribute='sysID') -%}
 {{ u.sysID }}; {{ u.name }} {% for s in sessions %}; {% endfor %}
 {% endfor %}
