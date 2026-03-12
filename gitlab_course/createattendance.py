@@ -18,6 +18,9 @@ def arg_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("course", type=Path,
                         help="the course description file")
+    parser.add_argument("-s", "--session", type=int,
+                        help="create gitlab issue for session"
+                        " attendance")
     parser.add_argument("-o", "--output", type=Path,
                         help="write to results to file")
     return parser
@@ -42,8 +45,14 @@ def main():
 
     users = glc.getUserList(config['participants'])
 
-    attendance = env.get_template("attendance.csv")
-    out = attendance.render(**config, users=users)
+    if args.session is None:
+        attendance = env.get_template("attendance.csv")
+        out = attendance.render(**config, users=users)
+    else:
+        session = config['sessions'][args.session]
+        attendance = env.get_template("attendance.md")
+        out = attendance.render(
+            session=session, users=users)
 
     if args.output is None:
         print(out)
