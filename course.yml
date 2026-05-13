@@ -3,9 +3,12 @@ gitlab: charite
 series: SpaceMed Digital Literacy
 name: 1992
 helpers:
-  - reppasa
+  - a.user@some.where
+max_participants: 25
 participants:
   - svc-sc-slurm1
+waiting: []
+cancelled: []
 readme: |
   # Welcome to {{ name }} Course of {{ year }}
 
